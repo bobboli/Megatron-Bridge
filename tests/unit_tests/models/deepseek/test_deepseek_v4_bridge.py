@@ -214,3 +214,4 @@ class TestDeepSeekV4RotaryPercent:
             out = bridge.provider_bridge(hf_pretrained)
 
         assert out.rotary_percent == 1.0
+        assert out.csa_compress_rotary_base == 160000
