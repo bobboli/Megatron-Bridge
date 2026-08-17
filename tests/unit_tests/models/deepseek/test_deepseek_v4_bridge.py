@@ -207,9 +207,10 @@ class TestDeepSeekV4RotaryPercent:
             q_lora_rank=1024,
             o_groups=8,
             o_lora_rank=1024,
-            rope_theta=10000,
-            compress_rope_theta=160000,
-            rope_scaling={"factor": 16, "original_max_position_embeddings": 65536},
+            rope_scaling={
+                "main": {"rope_theta": 10000},
+                "compress": {"rope_theta": 160000, "factor": 16, "original_max_position_embeddings": 65536},
+            },
             num_hidden_layers=4,
             num_nextn_predict_layers=1,
             num_hash_layers=3,
@@ -242,3 +243,5 @@ class TestDeepSeekV4RotaryPercent:
 
         assert out.rotary_percent == 1.0
         assert out.dsv4_n_hash_layers == 3
+        assert out.rotary_base == 10000
+        assert out.csa_compress_rotary_base == 160000
