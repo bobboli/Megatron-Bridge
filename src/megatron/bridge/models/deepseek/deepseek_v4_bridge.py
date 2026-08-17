@@ -373,7 +373,10 @@ class DeepSeekV4Bridge(MegatronModelBridge):
         else:
             main_rope_params = rope_params
             compress_rope_params = rope_params
-        provider.rotary_base = float(main_rope_params.get("rope_theta", hf_config.rope_theta))  # 10000
+        main_rope_theta = main_rope_params.get("rope_theta")
+        if main_rope_theta is None:
+            main_rope_theta = hf_config.rope_theta
+        provider.rotary_base = float(main_rope_theta)  # 10000
         provider.csa_compress_rotary_base = float(
             getattr(hf_config, "compress_rope_theta", compress_rope_params.get("rope_theta", provider.rotary_base))
         )  # 160000
