@@ -111,6 +111,7 @@ class TestNativeDeepSeekV4ConfigTranslation:
             mhc_sinkhorn_iterations=20,
             moe_shared_expert_intermediate_size=2048,
         )
+        # Stub the generic export to isolate the DSV4 fields without constructing a full Megatron provider.
         with patch.object(
             MegatronModelBridge,
             "megatron_to_hf_config",
