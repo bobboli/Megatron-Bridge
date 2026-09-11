@@ -668,8 +668,8 @@ class DeepSeekV4Bridge(MegatronModelBridge):
                 "layers.*.attn.kv_norm.weight",
             ),
             # Factored output projection: wo_a (group param) + wo_b (row-parallel linear)
-            # linear_o_group_proj is a plain nn.Parameter (all o_groups on every TP rank)
-            ReplicatedMapping(
+            # TP-capable attention shards output groups along dim 0; TP=1 keeps all groups.
+            ColumnParallelMapping(
                 "decoder.layers.*.self_attention.linear_o_group_proj",
                 "layers.*.attn.wo_a.weight",
             ),
@@ -874,9 +874,9 @@ class DeepSeekV4Bridge(MegatronModelBridge):
                     f"{ck_pfx}.attn.attn_sink",
                 )
             )
-            # linear_o_group_proj is a plain nn.Parameter (all o_groups on every TP rank)
+            # MTP output groups use the same dim-0 TP sharding as the main model.
             mappings.append(
-                ReplicatedMapping(
+                ColumnParallelMapping(
                     f"{mg_pfx}.mtp_model_layer.self_attention.linear_o_group_proj",
                     f"{ck_pfx}.attn.wo_a.weight",
                 )
